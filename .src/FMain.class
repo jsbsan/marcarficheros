@@ -1,0 +1,149 @@
+' Gambas class file
+
+'url: https://emojipedia.org/emoji/
+
+Public Listacodigo As String[] = ["%E2%9E%A1%EF%B8%8F", "%E2%8F%B9", "%20%F0%9F%94%83", "%E2%9D%97", "%E2%9D%8C", "%E2%9C%94%EF%B8%8F", "%F0%9F%94%B4", "%F0%9F%94%B5", "%F0%9F%94%A5"]
+
+Public fechahaciaderecha As String = "➡️" '"%E2%9E%A1%EF%B8%8F"
+Public parada As String = "⏹" '%E2%8F%B9
+Public rehacer As String = " 🔃"  '%20%F0%9F%94%83
+Public exclamacion As String = "❗"
+'%E2%9D%97%20
+Public cancelado As String = "❌"
+'%E2%9D%8C
+Public checkok As String = "✔️"
+'%E2%9C%94%EF%B8%8F
+Public circulorojo As String = "🔴"
+'%F0%9F%94%B4
+Public circuloazul As String = "🔵"
+'%F0%9F%94%B5
+
+Public fuego As String = "🔥"
+'%F0%9F%94%A5
+
+'variables del programa
+Public lista As String[]
+
+Public nombreficheroyruta As String
+Public nombrefinal As String
+
+Public Sub Form_Open()
+
+  settings.Read(Me)
+  Me.title = circuloazul
+  lista = [fechahaciaderecha, parada, rehacer, exclamacion, cancelado, checkok, circulorojo, circuloazul, fuego]
+  ComboBox1.text = fechahaciaderecha
+  ComboBox1.list = lista
+
+End
+
+Public Sub FORM_Show()
+
+  RadioButtonInicio.VALUE = Settings["VALOR/INICIO"]
+  RadioButtonFin.Value = Settings["VALOR/FIN"]
+
+End
+
+Public Sub ButtonMarcar_Drop()
+
+  Dim nombrefichero As String
+  Dim rutainicial As String
+
+  nombreficheroyruta = Split(Drag.Data, "\r")[0]
+  nombreficheroyruta = Replace(nombreficheroyruta, "file://", "")
+
+  nombreficheroyruta = SustituirCodigoPorEmojis(nombreficheroyruta)
+
+  'creo nombre nuevo
+  If Not IsDir(nombreficheroyruta) Then
+    'es un fichero
+    rutainicial = File.Dir(nombreficheroyruta)
+    nombrefichero = File.baseName(nombreficheroyruta)
+
+    If RadioButtonInicio.Value = True Then
+      nombrefichero = ComboBox1.text & nombrefichero & "." & File.Ext(nombreficheroyruta)
+      nombrefinal = rutainicial & "/" & nombrefichero
+    Else
+      nombrefichero = nombrefichero & ComboBox1.text & "." & File.Ext(nombreficheroyruta)
+      nombrefinal = rutainicial & "/" & nombrefichero
+
+    Endif
+    nombreficheroyruta = Replace(nombreficheroyruta, "%20", " ")
+    nombrefinal = Replace(nombrefinal, "%20", " ")
+
+    Try Exec ["mv", nombreficheroyruta, nombrefinal]
+    'Move nombreficheroyruta To nombrefinal
+    'Try Shell("mv " & nombrefichero & " " & nombrefinal)
+    If Error Then
+      Message.Error("Se ha producido un error al intentar cambiar el nombre")
+      Print Error.Backtrace
+      Print Error.Code
+      Print Error.Text
+      Print Error.Where
+    Endif
+
+  Endif
+
+End
+
+Public Sub ButtonEliminarMarcas_Drop()
+
+  Dim token As String
+
+  nombreficheroyruta = Split(Drag.Data, "\r")[0]
+  nombreficheroyruta = Replace$(nombreficheroyruta, "file://", "")
+  nombrefinal = nombreficheroyruta
+
+  ' Print nombrefinal
+
+  nombreficheroyruta = SustituirCodigoPorEmojis(nombreficheroyruta)
+
+  nombreficheroyruta = SustituirCodigoPorEmojis(nombreficheroyruta)
+  nombrefinal = EliminarEmojis(nombrefinal)
+
+  Try Exec ["mv", nombreficheroyruta, nombrefinal]
+  If Error Then
+    Message.Error("Se ha producido un error al intentar cambiar el nombre")
+    Print Error.Backtrace
+    Print Error.Code
+    Print Error.Text
+    Print Error.Where
+  Endif
+
+End
+
+Public Function SustituirCodigoPorEmojis(nombre As String) As String
+
+  Dim elemento As String
+  Dim contador As String = -1
+
+  For Each elemento In lista
+    contador += 1
+    nombre = Replace(nombre, Listacodigo[contador], elemento)
+
+  Next
+  nombre = Replace(nombre, "%20", " ")
+  Return nombre
+
+End
+
+Public Function EliminarEmojis(nombre As String) As String
+
+  Dim elemento As String
+
+  For Each elemento In Listacodigo
+    nombre = Replace(nombre, elemento, "")
+  Next
+
+  nombre = Replace(nombre, "%20", " ")
+  Return nombre
+
+End
+
+Public Sub Form_Close()
+
+  settings.Write(Me)
+  Settings["VALOR/INICIO"] = RadioButtonInicio.VALUE
+  Settings["VALOR/FIN"] = RadioButtonFin.Value
+
+End

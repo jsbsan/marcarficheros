@@ -1,0 +1,50 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,26,29)
+  Icon = Picture["bandera.png"]
+  Arrangement = Arrange.Vertical
+  AutoResize = True
+  { Panel1 Panel
+    MoveScaled(0,0,26,16)
+    { ButtonMarcar Button
+      MoveScaled(1,5,24,10)
+      ToolTip = ("pone emoji al nombre del fichero")
+      Drop = True
+      Expand = True
+      Text = ("Marcar")
+      Picture = Picture["icon:/24/flag"]
+    }
+    { ComboBox1 ComboBox
+      MoveScaled(1,0,8,4)
+    }
+    { RadioButtonInicio RadioButton
+      MoveScaled(10,1,7,3)
+      Font = Font["-3"]
+      ToolTip = ("al principio del nombre del fichero")
+      Text = ("Inicio")
+      Value = True
+    }
+    { RadioButtonFin RadioButton
+      MoveScaled(18,1,6,3)
+      Font = Font["-3"]
+      ToolTip = ("al final del nombre del fichero")
+      Text = ("final")
+    }
+  }
+  { Panel2 Panel
+    MoveScaled(1,17,24,12)
+    Expand = True
+    Arrangement = Arrange.Fill
+    AutoResize = True
+    Padding = 8
+    { ButtonEliminarMarcas Button
+      MoveScaled(2,2,21,9)
+      ToolTip = ("quita los emoji del nombre del fichero")
+      Drop = True
+      Expand = True
+      Text = ("Eliminar Marcas")
+      Picture = Picture["icon:/24/clear"]
+    }
+  }
+}
